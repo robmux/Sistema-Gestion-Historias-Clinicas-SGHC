@@ -99,8 +99,8 @@ api.add_resource(DoctorResource, '/doctors/<string:user_auth_id>')
 api.add_resource(PatientListResource, '/patients')
 api.add_resource(PatientResource, '/patients/<string:user_auth_id>')
 
-api.add_resource(MedicalObservationListResource, '/medical_services')
-api.add_resource(MedicalObservationResource, '/medical_services/<string:name>')
+api.add_resource(MedicalObservationListResource, '/patients//<string:patient_user_auth_id>/medical_observations')
+api.add_resource(MedicalObservationResource, '/patients//<string:patient_user_auth_id>/medical_observations')
 
 # Auth
 api.add_resource(UserListResource, '/users')

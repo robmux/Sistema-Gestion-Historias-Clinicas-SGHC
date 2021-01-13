@@ -11,6 +11,7 @@ from flask_jwt_extended import (
 )
 
 from models.user import UserModel
+
 _user_parser = reqparse.RequestParser()
 
 _user_parser.add_argument('user_type',
