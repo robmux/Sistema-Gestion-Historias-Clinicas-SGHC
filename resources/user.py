@@ -105,6 +105,8 @@ class UserLoginResource(Resource):
         data = _user_login_parser.parse_args()
 
         user = UserModel.find_by_identification(data['user_auth_id'])
+        if user.is_active is False:
+            abort(401, message="You have to confirm your account to login")
 
         if user and self.bcrypt.check_password_hash(user.password, data['password']):
             access_token = create_access_token(identity=user.id, fresh=True)

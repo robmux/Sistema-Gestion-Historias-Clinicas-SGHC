@@ -51,6 +51,7 @@ def validate_medical_services(medical_services: list, hospital_id: int):
 
 
 class HospitalResource(Resource):
+    @jwt_required
     def post(self, user_auth_id):
         user = get_or_abort_if_user_doesnt_exist(user_auth_id)
         hospital_data = validate_hospital_register()
