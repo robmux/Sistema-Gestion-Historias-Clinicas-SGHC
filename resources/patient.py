@@ -5,8 +5,6 @@ from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt_claims, f
 from models.user import UserModel
 from models.patient import PatientModel
 
-from datetime import date
-
 
 def get_or_abort_if_user_doesnt_exist(auth_user_id):
     user = UserModel.find_by_identification(auth_user_id)

@@ -10,3 +10,8 @@ class MedicalServiceModel(db.Model):
 
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospitals.id'))
     hospital = db.relationship('HospitalModel', uselist=False)
+
+    def __init__(self, name, description, hospital_id) -> None:
+        self.name = name
+        self.description = description
+        self.hospital_id = hospital_id
