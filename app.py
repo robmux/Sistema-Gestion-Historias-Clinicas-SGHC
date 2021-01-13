@@ -7,10 +7,10 @@ from flask_bcrypt import Bcrypt
 
 from db import db
 from resources.user import UserListResource, UserRegisterResource, UserLoginResource, UserResource
-from resources.hospital import HospitalResource, HospitalListResource
-from resources.patient import PatientResource, PatientListResource
-from resources.doctor import DoctorResource, DoctorListResource
-from resources.medical_observation import MedicalObservationResource, MedicalObservationListResource
+from resources.hospital import HospitalResource
+from resources.patient import PatientResource
+from resources.doctor import DoctorResource
+from resources.medical_observation import MedicalObservationResource
 from config import Config, ProductionConfig, DevelopmentConfig
 
 app = Flask(__name__)
@@ -90,16 +90,12 @@ def create_tables():
     db.create_all()
 
 
-api.add_resource(HospitalListResource, '/hospitals')
 api.add_resource(HospitalResource, '/hospitals/<string:user_auth_id>')
 
-api.add_resource(DoctorListResource, '/doctors')
 api.add_resource(DoctorResource, '/doctors/<string:doctor_user_auth_id>')
 
-api.add_resource(PatientListResource, '/patients')
 api.add_resource(PatientResource, '/patients/<string:user_auth_id>')
 
-api.add_resource(MedicalObservationListResource, '/patients//<string:patient_user_auth_id>/medical_observations')
 api.add_resource(MedicalObservationResource, '/patients//<string:patient_user_auth_id>/medical_observations')
 
 # Auth

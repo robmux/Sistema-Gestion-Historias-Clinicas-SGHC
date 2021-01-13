@@ -1,9 +1,8 @@
 from models.hospital import HospitalModel
 from models.doctor import DoctorModel
 import uuid
-from flask_restful import Resource, reqparse, abort, request, inputs
-from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt_claims, fresh_jwt_required, jwt_optional
-
+from flask_restful import Resource, reqparse, abort, inputs
+from flask_jwt_extended import jwt_required
 from models.user import UserModel
 
 
@@ -106,7 +105,3 @@ class DoctorResource(Resource):
         new_doctor.save_to_db()
 
         return {"message": "Doctor saved successfully.", "user": user_copy}, 201
-
-
-class DoctorListResource(Resource):
-    pass

@@ -1,8 +1,8 @@
 from models.medical_observation import MedicalObservationModel
 from models.doctor import DoctorModel
 from models.medical_service import MedicalServiceModel
-from flask_restful import Resource, reqparse, abort, request, inputs
-from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt_claims, fresh_jwt_required, jwt_optional
+from flask_restful import Resource, reqparse, abort
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from models.user import UserModel
 
@@ -55,7 +55,6 @@ def validate_create():
 class MedicalObservationResource(Resource):
     @jwt_required
     def post(self, patient_user_auth_id):
-        # TODO: Use claims
         identity = get_jwt_identity()
         doctor = DoctorModel.find_by_userid(identity)
         if doctor:
@@ -75,7 +74,3 @@ class MedicalObservationResource(Resource):
             return new_observation.json(), 201
         else:
             abort(401, message="User is not authorized")
-
-
-class MedicalObservationListResource(Resource):
-    pass

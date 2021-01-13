@@ -55,7 +55,3 @@ class PatientResource(Resource):
         new_patient.save_to_db()
 
         return {"message": "Patient data saved successfully."}, 201
-
-
-class PatientListResource(Resource):
-    pass

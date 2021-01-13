@@ -1,7 +1,7 @@
 from models.medical_service import MedicalServiceModel
 from models.hospital import HospitalModel
-from flask_restful import Resource, reqparse, abort, request, inputs
-from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt_claims, fresh_jwt_required, jwt_optional
+from flask_restful import Resource, reqparse, abort
+from flask_jwt_extended import jwt_required
 
 from models.user import UserModel
 
