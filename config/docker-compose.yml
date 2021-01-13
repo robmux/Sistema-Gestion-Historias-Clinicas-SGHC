@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: change_me
+      POSTGRES_DB: postgres
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - postgres-compose-network
+
+networks:
+  postgres-compose-network:
+    driver: bridge
