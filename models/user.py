@@ -14,11 +14,12 @@ class UserModel(db.Model):
 
     is_active = db.Column(db.Boolean, server_default=expression.false(), nullable=False)
 
-    def __init__(self, user_auth_id, email, password, phone_number):
+    def __init__(self, user_auth_id, email, password, phone_number, address=""):
         self.user_auth_id = user_auth_id
         self.email = email
         self.password = password
         self.phone_number = phone_number
+        self.address = address
 
     def save_to_db(self):
         db.session.add(self)

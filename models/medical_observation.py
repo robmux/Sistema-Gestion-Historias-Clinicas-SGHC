@@ -2,7 +2,7 @@ from db import db
 
 
 class MedicalObservationModel(db.Model):
-    __tablename__ = 'medical_observation'
+    __tablename__ = 'medical_observations'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(255), nullable=False)

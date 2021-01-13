@@ -68,6 +68,10 @@ def validate_register(base_parser_copy: reqparse.RequestParser):
     register_parser = base_parser_copy.copy()
     data = register_parser.parse_args()
 
+    user = UserModel.find_by_identification(data['user_auth_id'])
+    if user:
+        abort(400, message="User {} already exists ".format(user.user_auth_id))
+
     if data['user_type'] not in Contants.USER_TYPES:
         abort(400, message="Invalid user type {} ".format(data['user_type']))
     return {'user_auth_id': data['user_auth_id'],
@@ -115,13 +119,15 @@ class UserLoginResource(Resource):
 
 class UserResource(Resource):
 
+    @jwt_required
     def get(self, user_auth_id: int):
         user = get_or_abort_if_user_doesnt_exist(user_auth_id)
         if not user:
             return {'message': 'User Not Found'}, 404
         return user.json(), 200
 
-    def delete(self, user_auth_id: int):
+    @jwt_required
+    def delete(self, user_auth_id: str):
         user = get_or_abort_if_user_doesnt_exist(user_auth_id)
         if not user:
             return {'message': 'User Not Found'}, 404
@@ -129,11 +135,18 @@ class UserResource(Resource):
         return {'message': 'User deleted.'}, 200
 
     def patch(self, user_auth_id):
+        reqparser = reqparse.RequestParser()
+        reqparser.add_argument('email',
+                               type=str,
+                               required=True,
+                               help="This field cannot be blank."
+                               )
         user = get_or_abort_if_user_doesnt_exist(user_auth_id)
+
         is_confirming = True if 'confirm_request' in request.args and request.args['confirm_request'] == '1' else False
-        sent_email = request.args['email'] if 'email' in request.args else str(None)
 
         if is_confirming:
+            sent_email = reqparser.parse_args()['email']
             if safe_str_cmp(user.email, sent_email):
                 user.activate()
             else:

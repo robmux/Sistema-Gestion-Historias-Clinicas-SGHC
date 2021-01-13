@@ -94,7 +94,7 @@ api.add_resource(HospitalListResource, '/hospitals')
 api.add_resource(HospitalResource, '/hospitals/<string:user_auth_id>')
 
 api.add_resource(DoctorListResource, '/doctors')
-api.add_resource(DoctorResource, '/doctors/<string:user_auth_id>')
+api.add_resource(DoctorResource, '/doctors/<string:doctor_user_auth_id>')
 
 api.add_resource(PatientListResource, '/patients')
 api.add_resource(PatientResource, '/patients/<string:user_auth_id>')

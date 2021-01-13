@@ -36,6 +36,7 @@ _patient_parser.add_argument('birthdate',
 
 def validate_patient_register():
     data = _patient_parser.parse_args()
+
     return {
         'name': data['name'],
         'birthdate': data['birthdate'],

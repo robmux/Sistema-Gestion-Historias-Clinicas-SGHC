@@ -9,8 +9,10 @@ class PatientModel(db.Model):
     name = db.Column(db.String(255), nullable=False)
     birthdate = db.Column(db.Date, nullable=False)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete='cascade', onupdate='cascade'))
     user = db.relationship("UserModel", uselist=False)
+
+    medical_observations = db.relationship('MedicalObservationModel', lazy='dynamic')
 
     def __init__(self, name: str, birthdate: date, user_id: int) -> None:
         self.name = name
@@ -21,10 +23,10 @@ class PatientModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    @classmethod
+    @ classmethod
     def find_by_identification(cls, identification: str) -> "PatientModel":
         return cls.query.filter_by(user_auth_id=identification).first()
 
-    @classmethod
+    @ classmethod
     def find_by_id(cls, _id: int) -> "PatientModel":
         return cls.query.filter_by(id=_id).first()
