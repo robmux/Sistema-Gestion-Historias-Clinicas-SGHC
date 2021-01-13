@@ -1,6 +1,14 @@
 import os
 
 
+class Contants:
+    USER_TYPES = [
+        'Hospital',
+        'Patient',
+        'Doctor',
+    ]
+
+
 class Config(object):
     DEBUG = False
     TESTING = False

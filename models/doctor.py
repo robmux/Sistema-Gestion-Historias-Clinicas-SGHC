@@ -1,5 +1,4 @@
 from db import db
-from sqlalchemy.sql import expression
 
 
 class DoctorModel(db.Model):

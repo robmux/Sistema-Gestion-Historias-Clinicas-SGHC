@@ -1,4 +1,5 @@
-from flask_restful import Resource, reqparse
+from config import Contants
+from flask_restful import Resource, reqparse, abort, request
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
     create_access_token,
@@ -8,9 +9,17 @@ from flask_jwt_extended import (
     get_raw_jwt,
     jwt_required
 )
+
 from models.user import UserModel
 
 _user_parser = reqparse.RequestParser()
+
+_user_parser.add_argument('user_type',
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
+
 _user_parser.add_argument('user_auth_id',
                           type=str,
                           required=True,
@@ -22,14 +31,42 @@ _user_parser.add_argument('password',
                           help="This field cannot be blank."
                           )
 
+_user_parser.add_argument('email',
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
+
+_user_parser.add_argument('phone_number',
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
+
+
+def get_or_abort_if_user_doesnt_exist(auth_user_id):
+    user = UserModel.find_by_identification(auth_user_id)
+    if user is None:
+        abort(404, message="User {} doesn't exist".format(auth_user_id))
+    return user
+
+
+def validate_register(base_parser_copy: reqparse.RequestParser):
+    register_parser = base_parser_copy.copy()
+    data = register_parser.parse_args()
+
+    if data['user_type'] not in Contants.USER_TYPES:
+        abort(400, message="Invalid user type {} ".format(data['user_type']))
+    return {'user_auth_id': data['user_auth_id'],
+            'email': data['email'],
+            'password': data['password'],
+            'phone_number': data['phone_number']}
+
 
 class UserRegisterResource(Resource):
+
     def post(self):
-        data = _user_parser.parse_args()
-
-        if UserModel.find_by_identification(data['user_auth_id']):
-            return {"message": "A user with that identification already exists"}, 400
-
+        data = validate_register(_user_parser)
         user = UserModel(**data)
         user.save_to_db()
 
@@ -54,21 +91,34 @@ class UserLoginResource(Resource):
 
 
 class UserResource(Resource):
-    @classmethod
-    def get(cls, user_id: int):
-        user = UserModel.find_by_id(user_id)
+
+    def get(self, user_auth_id: int):
+        user = get_or_abort_if_user_doesnt_exist(user_auth_id)
         if not user:
             return {'message': 'User Not Found'}, 404
         return user.json(), 200
 
-    @classmethod
-    def delete(cls, user_id: int):
-        user = UserModel.find_by_id(user_id)
+    def delete(self, user_auth_id: int):
+        user = get_or_abort_if_user_doesnt_exist(user_auth_id)
         if not user:
             return {'message': 'User Not Found'}, 404
         user.delete_from_db()
         return {'message': 'User deleted.'}, 200
 
+    def patch(self, user_auth_id):
+        user = get_or_abort_if_user_doesnt_exist(user_auth_id)
+        is_confirming = True if 'confirm_request' in request.args and request.args['confirm_request'] == '1' else False
+        sent_email = request.args['email'] if 'email' in request.args else str(None)
+
+        if is_confirming:
+            if safe_str_cmp(user.email, sent_email):
+                user.activate()
+            else:
+                abort(400, message=f"Incorrect email {sent_email}")
+
+        return {'message': 'User updated.'}, 200
+
 
 class UserListResource(Resource):
-    pass
+    def get(self):
+        return {'users': UserModel.find_all()}, 200

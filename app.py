@@ -5,7 +5,7 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
 from db import db
-from resources.user import UserRegisterResource, UserLoginResource, UserResource
+from resources.user import UserListResource, UserRegisterResource, UserLoginResource, UserResource
 from resources.hospital import HospitalResource, HospitalListResource
 from resources.patient import PatientResource, PatientListResource
 from resources.doctor import DoctorResource, DoctorListResource
@@ -88,22 +88,23 @@ def create_tables():
     db.create_all()
 
 
-api.add_resource(HospitalResource, '/hospitals/<string:name>')
 api.add_resource(HospitalListResource, '/hospitals')
+api.add_resource(HospitalResource, '/hospitals/<string:user_auth_id>')
 
-api.add_resource(DoctorResource, '/doctors/<string:name>')
 api.add_resource(DoctorListResource, '/doctors')
+api.add_resource(DoctorResource, '/doctors/<string:user_auth_id>')
 
-api.add_resource(PatientResource, '/patients/<string:name>')
 api.add_resource(PatientListResource, '/patients')
+api.add_resource(PatientResource, '/patients/<string:user_auth_id>')
 
-api.add_resource(MedicalObservationResource, '/medical_services/<string:name>')
 api.add_resource(MedicalObservationListResource, '/medical_services')
+api.add_resource(MedicalObservationResource, '/medical_services/<string:name>')
 
 # Auth
+api.add_resource(UserListResource, '/users')
+api.add_resource(UserResource, '/users/<string:user_auth_id>')
 api.add_resource(UserRegisterResource, '/register')
 api.add_resource(UserLoginResource, '/login')
-api.add_resource(UserResource, '/user/<int:user_id>')
 
 if __name__ == '__main__':
     db.init_app(app)
