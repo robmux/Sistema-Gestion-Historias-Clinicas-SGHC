@@ -8,5 +8,5 @@ class MedicalServiceModel(db.Model):
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
 
-    hospital_id = db.Column(db.Integer, db.Foreignkey('hospitals.id'))
+    hospital_id = db.Column(db.Integer, db.ForeignKey('hospitals.id'))
     hospital = db.relationship('HospitalModel', uselist=False)

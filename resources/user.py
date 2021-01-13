@@ -11,7 +11,6 @@ from flask_jwt_extended import (
 )
 
 from models.user import UserModel
-
 _user_parser = reqparse.RequestParser()
 
 _user_parser.add_argument('user_type',
@@ -43,6 +42,19 @@ _user_parser.add_argument('phone_number',
                           help="This field cannot be blank."
                           )
 
+_user_login_parser = reqparse.RequestParser()
+
+_user_login_parser.add_argument('user_auth_id',
+                                type=str,
+                                required=True,
+                                help="This field cannot be blank."
+                                )
+_user_login_parser.add_argument('password',
+                                type=str,
+                                required=True,
+                                help="This field cannot be blank."
+                                )
+
 
 def get_or_abort_if_user_doesnt_exist(auth_user_id):
     user = UserModel.find_by_identification(auth_user_id)
@@ -64,9 +76,14 @@ def validate_register(base_parser_copy: reqparse.RequestParser):
 
 
 class UserRegisterResource(Resource):
+    def __init__(self):
+        from app import bcrypt
+        self.bcrypt = bcrypt
 
     def post(self):
+
         data = validate_register(_user_parser)
+        data['password'] = self.bcrypt.generate_password_hash(data['password'])
         user = UserModel(**data)
         user.save_to_db()
 
@@ -74,12 +91,17 @@ class UserRegisterResource(Resource):
 
 
 class UserLoginResource(Resource):
+
+    def __init__(self):
+        from app import bcrypt
+        self.bcrypt = bcrypt
+
     def post(self):
-        data = _user_parser.parse_args()
+        data = _user_login_parser.parse_args()
 
         user = UserModel.find_by_identification(data['user_auth_id'])
 
-        if user and safe_str_cmp(user.password, data['password']):
+        if user and self.bcrypt.check_password_hash(user.password, data['password']):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
             return {

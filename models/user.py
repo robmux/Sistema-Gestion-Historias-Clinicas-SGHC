@@ -7,7 +7,7 @@ class UserModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_auth_id = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
+    password = db.Column(db.Binary(255), nullable=False)
     email = db.Column(db.String(255), unique=True)
     phone_number = db.Column(db.String(255), unique=True)
     address = db.Column(db.String(255))
@@ -35,6 +35,11 @@ class UserModel(db.Model):
 
     def activate(self):
         self.is_active = True
+        db.session.add(self)
+        db.session.commit()
+
+    def update_address(self, address):
+        self.address = address
         db.session.add(self)
         db.session.commit()
 

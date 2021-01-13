@@ -9,6 +9,8 @@ flask-jwt-extended = "*"
 flask-sqlalchemy = "*"
 python-dotenv = "*"
 psycopg2 = "*"
+bcrypt = "*"
+flask-bcrypt = "*"
 uwsgi = "*"
 
 [dev-packages]

@@ -3,6 +3,7 @@ import os
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from flask_bcrypt import Bcrypt
 
 from db import db
 from resources.user import UserListResource, UserRegisterResource, UserLoginResource, UserResource
@@ -16,6 +17,7 @@ app = Flask(__name__)
 environment_configuration = os.environ['CONFIGURATION_SETUP']
 app.config.from_object(environment_configuration)
 
+bcrypt = Bcrypt(app)
 api = Api(app)
 
 """
