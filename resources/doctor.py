@@ -7,43 +7,43 @@ from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt_claims, f
 from models.user import UserModel
 
 
-_patient_parser = reqparse.RequestParser()
+_doctor_parser = reqparse.RequestParser()
 
-_patient_parser.add_argument('name',
-                             type=str,
-                             required=True,
-                             help="This field cannot be blank."
-                             )
+_doctor_parser.add_argument('name',
+                            type=str,
+                            required=True,
+                            help="This field cannot be blank."
+                            )
 
-_patient_parser.add_argument('birthdate',
-                             type=inputs.date,
-                             required=True,
-                             help="This field cannot be blank."
-                             )
+_doctor_parser.add_argument('birthdate',
+                            type=inputs.date,
+                            required=True,
+                            help="This field cannot be blank."
+                            )
 
-_patient_parser.add_argument('email',
-                             type=str,
-                             required=True,
-                             help="This field cannot be blank."
-                             )
+_doctor_parser.add_argument('email',
+                            type=str,
+                            required=True,
+                            help="This field cannot be blank."
+                            )
 
-_patient_parser.add_argument('phone_number',
-                             type=str,
-                             required=True,
-                             help="This field cannot be blank."
-                             )
+_doctor_parser.add_argument('phone_number',
+                            type=str,
+                            required=True,
+                            help="This field cannot be blank."
+                            )
 
-_patient_parser.add_argument('address',
-                             type=str,
-                             required=True,
-                             help="This field cannot be blank."
-                             )
+_doctor_parser.add_argument('address',
+                            type=str,
+                            required=True,
+                            help="This field cannot be blank."
+                            )
 
-_patient_parser.add_argument('hospital_auth_id',
-                             type=str,
-                             required=True,
-                             help="This field cannot be blank."
-                             )
+_doctor_parser.add_argument('hospital_auth_id',
+                            type=str,
+                            required=True,
+                            help="This field cannot be blank."
+                            )
 
 
 def get_or_abort_if_user_doesnt_exist(auth_user_id):
@@ -58,12 +58,17 @@ def get_or_abort_if_hospitals_doesnt_exist(hospital_user_auth_id):
     hospital = HospitalModel.find_by_user_id(user.id)
     if hospital is None:
         abort(404, message="Hospital {} doesn't exist".format(hospital_user_auth_id))
-    return user
+    return hospital
 
 
 def validate_doctor_register(doctor_auth_id):
-    data = _patient_parser.parse_args()
+    user = UserModel.find_by_identification(doctor_auth_id)
+    if user:
+        abort(400, message="Doctor {} already exists ".format(user.user_auth_id))
+
+    data = _doctor_parser.parse_args()
     hospital = get_or_abort_if_hospitals_doesnt_exist(data['hospital_auth_id'])
+
     return {
         'name': data['name'],
         'birthdate': data['birthdate'],
@@ -91,8 +96,13 @@ class DoctorResource(Resource):
         new_user = UserModel(**user_data)
         new_user.save_to_db()
 
-        doctor_data['user_id'] = new_user.id
-        new_doctor = DoctorModel(**doctor_data)
+        data = {
+            'name': doctor_data['name'],
+            'user_id': new_user.id,
+            'hospital_id': doctor_data['hospital_id'],
+            'birthdate': doctor_data['birthdate'],
+        }
+        new_doctor = DoctorModel(**data)
         new_doctor.save_to_db()
 
         return {"message": "Doctor saved successfully.", "user": user_copy}, 201

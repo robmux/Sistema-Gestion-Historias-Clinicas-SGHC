@@ -2,7 +2,7 @@ from db import db
 
 
 class HospitalModel(db.Model):
-    __tablename__ = "hospitals"
+    __tablename__ = 'hospitals'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
